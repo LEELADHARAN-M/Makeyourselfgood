@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Make Yourself Good - Result</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- Date and Time -->
+    <div class="datetime">
+        <div id="date"></div>
+        <div id="time"></div>
+    </div>
+
+    <div class="result-page">
+
+        <h1 class="website-title">
+            MAKE YOURSELF GOOD
+        </h1>
+
+        <div class="result-box">
+
+            <div class="result-header">
+
+                <span>TASK NO</span>
+                <span>TIME</span>
+                <span>TASK NAME</span>
+                <span>POINTS</span>
+                <span>FINAL</span>
+
+            </div>
+
+            <div id="resultList"></div>
+
+            <div class="total-points">
+                Today Tasks Points -
+                <strong>
+                    <span id="totalPoints">0</span>/<span id="maxPoints">0</span>
+                </strong>
+            </div>
+
+        </div>
+
+        <div class="overall">
+
+            <p>Today Overall Tasks Performance</p>
+
+            <h2 id="overallResult">
+                Excellent
+            </h2>
+
+        </div>
+
+        <button class="refresh-button result-refresh" onclick="refreshDay()">
+            REFRESH
+        </button>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
+<style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(circle at 20% 20%, #6c2bd9, transparent 35%),
+        radial-gradient(circle at 80% 30%, #e600a9, transparent 35%),
+        radial-gradient(circle at 50% 90%, #00bde8, transparent 40%),
+        linear-gradient(135deg, #24105c, #7613a8, #00a9d4);
+
+    background-attachment: fixed;
+
+    color: white;
+}
+
+
+/* DATE + TIME */
+
+.datetime {
+    position: fixed;
+
+    top: 20px;
+    right: 25px;
+
+    text-align: right;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    line-height: 1.6;
+
+    z-index: 100;
+}
+
+
+/* LOGIN PAGE */
+
+.login-page {
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    padding-top: 50px;
+}
+
+
+.welcome-box {
+    width: 650px;
+
+    max-width: 90%;
+
+    padding: 25px;
+
+    text-align: center;
+
+    font-size: 28px;
+    font-weight: bold;
+
+    color: #21103e;
+
+    background: rgba(255,255,255,0.75);
+
+    border-radius: 5px;
+
+    transform: skew(-8deg);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.3);
+}
+
+
+.login-title {
+    margin-top: 45px;
+
+    font-size: 70px;
+
+    font-weight: bold;
+
+    text-shadow:
+        0 5px 15px rgba(0,0,0,0.4);
+}
+
+
+.login-box {
+    width: 610px;
+
+    max-width: 90%;
+
+    margin-top: 35px;
+}
+
+
+.login-box label {
+    display: block;
+
+    margin-top: 20px;
+    margin-bottom: 8px;
+
+    font-weight: bold;
+
+    font-size: 18px;
+}
+
+
+.login-box input {
+    width: 100%;
+
+    padding: 20px;
+
+    border: 2px solid rgba(255,255,255,0.5);
+
+    border-radius: 40px;
+
+    outline: none;
+
+    font-size: 17px;
+
+    background: rgba(255,255,255,0.75);
+
+    color: #222;
+box-shadow:
+        0 8px 20px rgba(0,0,0,0.2);
+}
+
+
+.login-box input:focus {
+    border-color: #ff35c8;
+}
+
+
+/* MAIN BUTTON */
+
+.main-button {
+    display: block;
+
+    margin: 65px auto 0;
+
+    width: 320px;
+
+    padding: 18px;
+
+    border: none;
+
+    border-radius: 40px;
+
+    background: linear-gradient(
+        90deg,
+        #ff168f,
+        #752cff
+    );
+
+    color: white;
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.35);
+
+    transition: 0.3s;
+}
+
+
+.main-button:hover,
+.add-button:hover,
+.submit-button:hover,
+.refresh-button:hover,
+.save-button:hover {
+    transform: scale(1.05);
+}
+
+
+.error {
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #ffdddd;
+
+    font-weight: bold;
+}
+
+
+/* TASK PAGE */
+
+.tasks-page {
+    min-height: 100vh;
+
+    padding: 55px 5% 40px;
+
+    text-align: center;
+}
+
+
+.website-title {
+    display: inline-block;
+
+    padding: 25px 70px;
+
+    border-radius: 35px;
+
+    background: rgba(255,255,255,0.18);
+
+    border: 1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.25);
+
+    font-size: 45px;
+
+    text-shadow:
+        0 3px 10px rgba(0,0,0,0.4);
+}
+
+
+.welcome-text {
+    text-align: left;
+
+    margin-top: 25px;
+
+    font-size: 18px;
+}
+
+
+.tasks-page h2 {
+    font-size: 45px;
+
+    margin: 20px 0;
+}
+
+
+/* ADD TASK BUTTON */
+
+.add-button {
+    border: none;
+
+    padding: 15px 40px;
+
+    border-radius: 35px;
+
+    background: linear-gradient(
+        90deg,
+        #ff238f,
+        #7135ed
+    );
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.3);
+
+    transition: 0.3s;
+}
+
+
+/* TASK FORM */
+
+.task-form {
+    display: none;
+
+    width: 700px;
+
+    max-width: 95%;
+
+    margin: 25px auto;
+
+    padding: 25px;
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,0.18);
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.25);
+}
+
+
+.task-form input {
+    width: 45%;
+
+    padding: 15px;
+
+    margin: 5px;
+
+    border: none;
+
+    border-radius: 30px;
+
+    outline: none;
+
+    font-size: 16px;
+}
+
+
+.save-button,
+.cancel-button {
+    padding: 12px 25px;
+
+    margin: 10px 5px;
+
+    border: none;
+
+    border-radius: 25px;
+
+    color: white;
+
+    font-weight: bold;
+  cursor: pointer;
+}
+
+
+.save-button {
+    background: #16c76a;
+}
+
+
+.cancel-button {
+    background: #e33a45;
+}
+
+
+/* TASK TABLE */
+
+.task-container {
+    display: none;
+
+    margin-top: 35px;
+
+    overflow-x: auto;
+
+    border-radius: 25px;
+
+    background: rgba(255,255,255,0.17);
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.25);
+}
+
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 900px;
+}
+
+
+th {
+    padding: 20px 10px;
+
+    font-size: 17px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+
+td {
+    padding: 14px 8px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+
+    font-size: 16px;
+}
+
+
+/* STATUS BUTTONS */
+
+.status-button {
+    width: 45px;
+    height: 45px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    color: white;
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.done {
+    background: #20c46b;
+}
+
+
+.half {
+    background: #f5c400;
+}
+
+
+.notdone {
+    background: #e7353f;
+}
+
+
+.status-button.selected {
+    transform: scale(1.2);
+
+    box-shadow:
+        0 0 20px rgba(255,255,255,0.8);
+}
+
+
+/* BOTTOM BUTTONS */
+
+.bottom-buttons {
+    margin-top: 30px;
+}
+
+
+.refresh-button,
+.submit-button {
+    padding: 14px 35px;
+
+    margin: 5px;
+
+    border: none;
+
+    border-radius: 30px;
+
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+
+.refresh-button {
+    background: linear-gradient(
+        90deg,
+        #ff2491,
+        #7135ed
+    );
+}
+
+
+.submit-button {
+    background: linear-gradient(
+        90deg,
+        #6d2be7,
+        #2196f3
+    );
+}
+
+
+/* RESULT PAGE */
+
+.result-page {
+    min-height: 100vh;
+
+    padding: 55px 5%;
+
+    text-align: center;
+}
+
+
+.result-box {
+    width: 900px;
+
+    max-width: 95%;
+
+    margin: 50px auto 0;
+
+    padding: 25px;
+
+    border-radius: 30px;
+
+    background: rgba(255,255,255,0.18);
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.3);
+}
+
+
+.result-header,
+.result-row {
+    display: grid;
+
+    grid-template-columns:
+        0.7fr
+        1.3fr
+        2fr
+        1fr
+        1.3fr;
+
+    align-items: center;
+
+    gap: 10px;
+}
+  .result-header {
+    font-weight: bold;
+
+    padding: 15px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+
+
+.result-row {
+    padding: 18px 10px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+
+.points {
+    font-size: 25px;
+
+    font-weight: bold;
+}
+
+
+.excellent {
+    color: #6dff45;
+
+    font-weight: bold;
+
+    font-size: 20px;
+}
+
+
+.good {
+    color: #ffe600;
+
+    font-weight: bold;
+
+    font-size: 20px;
+}
+
+
+.poor {
+    color: #ff5252;
+
+    font-weight: bold;
+
+    font-size: 20px;
+}
+
+
+.total-points {
+    margin-top: 30px;
+
+    font-size: 25px;
+}
+
+
+.total-points strong {
+    font-size: 35px;
+}
+
+
+.overall {
+    margin-top: 50px;
+}
+
+
+.overall p {
+    font-size: 25px;
+}
+
+
+.overall h2 {
+    margin-top: 15px;
+
+    font-size: 55px;
+}
+
+
+.result-refresh {
+    margin-top: 30px;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .datetime {
+        font-size: 11px;
+
+        top: 10px;
+        right: 10px;
+    }
+
+
+    .welcome-box {
+        font-size: 20px;
+    }
+
+
+    .login-title {
+        font-size: 50px;
+    }
+
+
+    .website-title {
+        font-size: 25px;
+
+        padding: 20px 25px;
+    }
+
+
+    .tasks-page h2 {
+        font-size: 32px;
+    }
+
+
+    .welcome-text {
+        font-size: 14px;
+    }
+
+
+    .task-form input {
+        width: 90%;
+    }
+
+
+    .result-header,
+    .result-row {
+        grid-template-columns:
+            0.5fr
+            1fr
+            1.5fr
+            0.7fr
+            1fr;
+
+        font-size: 12px;
+    }
+
+
+    .overall h2 {
+        font-size: 40px;
+    }
+
+}
+</style>
+<script>
+    /* =====================================
+   DATE AND TIME
+===================================== */
+
+function updateDateTime() {
+
+    const now = new Date();
+
+    const dateElement = document.getElementById("date");
+    const timeElement = document.getElementById("time");
+
+    if (dateElement) {
+
+        dateElement.innerText =
+            now.toLocaleDateString("en-IN", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+
+    }
+
+    if (timeElement) {
+
+        timeElement.innerText =
+            now.toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+
+    }
+}
+
+
+updateDateTime();
+
+setInterval(updateDateTime, 1000);
+
+
+/* =====================================
+   DATA STORAGE
+===================================== */
+
+const today = new Date().toISOString().split("T")[0];
+
+let data = JSON.parse(
+    localStorage.getItem("makeYourselfGood")
+);
+/* =====================================
+   NEW DAY CHECK
+===================================== */
+
+if (!data || data.date !== today) {
+
+    data = {
+        date: today,
+        username: data ? data.username : "",
+        tasks: []
+    };
+
+    localStorage.setItem(
+        "makeYourselfGood",
+        JSON.stringify(data)
+    );
+}
+
+
+/* =====================================
+   SAVE DATA
+===================================== */
+
+function saveData() {
+
+    localStorage.setItem(
+        "makeYourselfGood",
+        JSON.stringify(data)
+    );
+}
+
+
+/* =====================================
+   LOGIN
+===================================== */
+
+function loginUser() {
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value.trim();
+
+    const error =
+        document.getElementById("loginError");
+
+
+    /*
+       Fixed username and password
+    */
+
+    if (
+        username !== "LEELADHARAN" ||
+        password !== "462700"
+    ) {
+
+        error.innerText =
+            "Invalid password.";
+
+        return;
+    }
+
+
+    data.username = username;
+
+    saveData();
+
+    window.location.href = "tasks.html";
+}
+
+
+/* =====================================
+   SHOW USERNAME
+===================================== */
+
+function displayUserName() {
+
+    const userName =
+        document.getElementById("userName");
+
+    if (userName) {
+
+        userName.innerText =
+            data.username;
+    }
+}
+
+
+displayUserName();
+
+
+/* =====================================
+   SHOW ADD TASK FORM
+===================================== */
+
+function showTaskForm() {
+
+    const form =
+        document.getElementById("taskForm");
+
+    if (form) {
+
+        form.style.display = "block";
+    }
+}
+
+
+/* =====================================
+   HIDE ADD TASK FORM
+===================================== */
+
+function hideTaskForm() {
+
+    const form =
+        document.getElementById("taskForm");
+
+    if (form) {
+
+        form.style.display = "none";
+    }
+}
+
+
+/* =====================================
+   REQUEST NOTIFICATION PERMISSION
+===================================== */
+
+function requestNotificationPermission() {
+
+    if ("Notification" in window) {
+
+        if (Notification.permission === "default") {
+
+            Notification.requestPermission();
+
+        }
+
+    }
+}
+
+
+/* =====================================
+   ADD TASK
+===================================== */
+
+function addTask() {
+
+    const name =
+        document.getElementById("taskName")
+        .value.trim();
+
+    const time =
+        document.getElementById("taskTime")
+        .value.trim();
+
+    const message =
+        document.getElementById("taskMessage");
+
+
+    if (name === "") {
+
+        message.innerText =
+            "Please enter the task name.";
+
+        return;
+    }
+
+
+    if (time === "") {
+
+        message.innerText =
+            "Please enter the task time.";
+
+        return;
+    }
+
+
+    const newTask = {
+
+        id: Date.now(),
+
+        name: name,
+
+        time: time,
+
+        status: null,
+
+        points: 0
+
+    };
+
+
+    data.tasks.push(newTask);
+
+    saveData();
+
+
+    document.getElementById("taskName").value = "";
+  document.getElementById("taskTime").value = "";
+
+    message.innerText = "";
+
+    hideTaskForm();
+
+    displayTasks();
+
+
+    /*
+       Ask for notification permission
+    */
+
+    requestNotificationPermission();
+
+
+    /*
+       Schedule task reminder
+    */
+
+    scheduleNotification(newTask);
+}
+
+
+/* =====================================
+   DISPLAY TASKS
+===================================== */
+
+function displayTasks() {
+
+    const taskList =
+        document.getElementById("taskList");
+
+    const taskContainer =
+        document.getElementById("taskContainer");
+
+
+    if (!taskList) {
+        return;
+    }
+
+
+    taskList.innerHTML = "";
+
+
+    if (data.tasks.length === 0) {
+
+        taskContainer.style.display = "none";
+
+        return;
+    }
+
+
+    taskContainer.style.display = "block";
+
+
+    data.tasks.forEach(function(task, index) {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>${index + 1}</td>
+
+            <td>${task.time}</td>
+
+            <td>${task.name}</td>
+
+            <td>
+                <button
+                    class="status-button done
+                    ${task.status === "done" ? "selected" : ""}"
+                    onclick="setStatus(${task.id}, 'done')">
+                    ✓
+                </button>
+            </td>
+
+            <td>
+                <button
+                    class="status-button half
+                    ${task.status === "half" ? "selected" : ""}"
+                    onclick="setStatus(${task.id}, 'half')">
+                    −
+                </button>
+            </td>
+
+            <td>
+                <button
+                    class="status-button notdone
+                    ${task.status === "notdone" ? "selected" : ""}"
+                    onclick="setStatus(${task.id}, 'notdone')">
+                    ×
+                </button>
+            </td>
+
+        `;
+
+
+        taskList.appendChild(row);
+
+    });
+}
+
+
+displayTasks();
+
+
+/* =====================================
+   SET TASK STATUS
+===================================== */
+
+function setStatus(taskId, status) {
+
+    const task =
+        data.tasks.find(
+            function(item) {
+                return item.id === taskId;
+            }
+        );
+
+
+    if (!task) {
+        return;
+    }
+
+
+    task.status = status;
+
+
+    if (status === "done") {
+
+        task.points = 2;
+
+    }
+
+    else if (status === "half") {
+
+        task.points = 1;
+
+    }
+
+    else if (status === "notdone") {
+
+        task.points = 0;
+
+    }
+
+
+    saveData();
+
+    displayTasks();
+}
+
+
+/* =====================================
+   SUBMIT TASKS
+===================================== */
+
+function submitTasks() {
+
+    const message =
+        document.getElementById("taskMessage");
+
+
+    if (data.tasks.length === 0) {
+
+        message.innerText =
+            "Please add at least one task.";
+
+        return;
+    }
+
+
+    let incomplete = data.tasks.some(
+        function(task) {
+            return task.status === null;
+        }
+    );
+
+
+    if (incomplete) {
+
+        message.innerText =
+            "Please select a status for every task.";
+
+        return;
+    }
+
+
+    saveData();
+
+    window.location.href = "result.html";
+}
+
+
+/* =====================================
+   GET PERFORMANCE
+===================================== */
+  function getPerformance(points) {
+
+    if (points === 2) {
+
+        return {
+            text: "Excellent",
+            className: "excellent"
+        };
+
+    }
+
+    if (points === 1) {
+
+        return {
+            text: "Good",
+            className: "good"
+        };
+
+    }
+
+    return {
+        text: "Poor",
+        className: "poor"
+    };
+}
+
+
+/* =====================================
+   DISPLAY RESULT
+===================================== */
+
+function displayResult() {
+
+    const resultList =
+        document.getElementById("resultList");
+
+
+    if (!resultList) {
+        return;
+    }
+
+
+    resultList.innerHTML = "";
+
+
+    let totalPoints = 0;
+
+
+    data.tasks.forEach(function(task, index) {
+
+        totalPoints += task.points;
+
+
+        const performance =
+            getPerformance(task.points);
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className = "result-row";
+
+
+        row.innerHTML = `
+
+            <span>${index + 1}</span>
+
+            <span>${task.time}</span>
+
+            <span>${task.name}</span>
+
+            <span class="points">
+                ${task.points}
+            </span>
+
+            <span class="${performance.className}">
+                ${performance.text}
+            </span>
+
+        `;
+
+
+        resultList.appendChild(row);
+
+    });
+
+
+    const maximumPoints =
+        data.tasks.length * 2;
+
+
+    const totalElement =
+        document.getElementById("totalPoints");
+
+    const maxElement =
+        document.getElementById("maxPoints");
+
+
+    totalElement.innerText =
+        totalPoints;
+
+    maxElement.innerText =
+        maximumPoints;
+
+
+    /* Overall performance */
+
+    let overall = "Poor";
+
+
+    if (data.tasks.length > 0) {
+
+        const average =
+            totalPoints / data.tasks.length;
+
+
+        if (average >= 1.5) {
+
+            overall = "Excellent";
+
+        }
+
+        else if (average >= 0.5) {
+
+            overall = "Good";
+
+        }
+
+        else {
+
+            overall = "Poor";
+        }
+    }
+
+
+    const overallElement =
+        document.getElementById("overallResult");
+
+
+    overallElement.innerText =
+        overall;
+
+
+    overallElement.className =
+        overall.toLowerCase();
+}
+
+
+displayResult();
+
+
+/* =====================================
+   TASK NOTIFICATION
+===================================== */
+
+function scheduleNotification(task) {
+
+    /*
+       Convert task time to a usable time.
+       Example:
+       6:00 AM
+       6:00 AM - 7:00 AM
+    */
+
+    let timeText = task.time;
+
+    if (timeText.includes("-")) {
+
+        timeText =
+            timeText.split("-")[0].trim();
+    }
+
+
+    /*
+       Find AM / PM
+    */
+
+    const match =
+        timeText.match(
+            /(\d{1,2}):(\d{2})\s*(AM|PM)/i
+        );
+
+
+    if (!match) {
+
+        console.log(
+            "Use time format like 6:00 AM"
+        );
+
+        return;
+    }
+
+
+    let hour =
+        parseInt(match[1]);
+
+    const minute =
+        parseInt(match[2]);
+  const ampm =
+        match[3].toUpperCase();
+
+
+    if (ampm === "PM" && hour !== 12) {
+
+        hour += 12;
+    }
+
+
+    if (ampm === "AM" && hour === 12) {
+
+        hour = 0;
+    }
+
+
+    const now =
+        new Date();
+
+
+    const reminderTime =
+        new Date();
+
+
+    reminderTime.setHours(
+        hour,
+        minute,
+        0,
+        0
+    );
+
+
+    /*
+       If the selected time has already passed,
+       don't create a notification for today.
+    */
+
+    if (reminderTime <= now) {
+
+        return;
+    }
+
+
+    const delay =
+        reminderTime.getTime() -
+        now.getTime();
+
+
+    setTimeout(function() {
+
+        if (
+            "Notification" in window &&
+            Notification.permission === "granted"
+        ) {
+
+            new Notification(
+                "Make Yourself Good",
+                {
+                    body:
+                        "Reminder: " +
+                        task.name,
+
+                    icon: ""
+                }
+            );
+
+        }
+
+    }, delay);
+}
+
+
+/* =====================================
+   RESTORE TASK NOTIFICATIONS
+===================================== */
+
+function restoreNotifications() {
+
+    if (!data.tasks) {
+        return;
+    }
+
+
+    data.tasks.forEach(function(task) {
+
+        scheduleNotification(task);
+
+    });
+}
+
+
+restoreNotifications();
+
+
+/* =====================================
+   REFRESH / CLEAR ALL TASKS
+===================================== */
+
+function refreshDay() {
+
+    /*
+       CLEAR ALL TASKS
+    */
+
+    data.tasks = [];
+
+    /*
+       Keep the username
+    */
+
+    data.date =
+        new Date().toISOString().split("T")[0];
+
+
+    saveData();
+
+
+    /*
+       Go to the new empty task page
+    */
+
+    window.location.href =
+        "tasks.html";
+}
+</script>
